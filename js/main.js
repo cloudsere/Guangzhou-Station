@@ -4,6 +4,7 @@ var gameIntro = document.getElementById("introduction");
 var videoContent = document.getElementById("videoContainer"); 
 
 function streetMap(){// google street map api
+	$("#stationcontent").css("background-image","none");
 		var streetGZ = document.createElement("div");
 		streetGZ.id = "map";
 		videoContent.setAttribute("style","display:none;");
@@ -22,6 +23,7 @@ function streetMap(){// google street map api
 			subtitle("caption","<h1 style='margin-left:5%;width:70%;'>该往哪里走？先看看周边。。。<br/>使用鼠标拖拽街景可转换视角,点击跳动的箭头可直接进入广州站      </h1>",200,1);
 			var arrowBounce = document.createElement("div");
 			arrowBounce.id = "arrow";
+			arrowBounce.innerHTML = "<br/><br/>进入<br/>";
 			stationContainer.insertBefore(arrowBounce,streetGZ);
 			var pov = panorama.getPov();
 			var t = setInterval(function(){
@@ -33,29 +35,15 @@ function streetMap(){// google street map api
 			},50);//setinterval
 					function ballMap(){
 						clearInterval(t);
-						$("#stationcontent").css("background-image","none");
+						$("#stationcontent").css("background","none");
 						$("#arrow").remove();
-						$("#map").css("z-index","-1");
+						document.getElementById("map").setAttribute("style","z-index:-1;background-image:url('img/map.png');background-repeat:no-repeat;");
 						$("#introduction").remove();
 						document.getElementById("map").innerHTML = "";
 						var canvasCt = document.createElement("canvas");
 						canvasCt.id = "canvasBall";
 						stationContainer.insertBefore(canvasCt,streetGZ);
 						
-						var map = new AMap.Map('map', {
-							resizeEnable: false,
-							zoomEnable:false,
-							dragEnable: false,
-							keyboardEnable:false,
-							zoom:18,
-							center: [113.257582,23.148728]
-						});
-						if (document.createElement('canvas') && document.createElement('canvas').getContext && document.createElement('canvas').getContext('2d')) {
-						// 实例化3D楼块图层
-						var buildings = new AMap.Buildings();
-						// 在map中添加3D楼块图层
-						buildings.setMap(map);
-					}
 					//控制小球移动
 						function ballRoll(){
 							var ctx;
@@ -63,6 +51,7 @@ function streetMap(){// google street map api
 							var dx = 5, dy = 5;
 							var x = 400;
 							var y = 300;
+							var r = 10;
 							function init(){
 								c = document.getElementById("canvasBall");
 								ctx = c.getContext("2d");
@@ -70,12 +59,12 @@ function streetMap(){// google street map api
 								ctx.canvas.height = window.innerHeight;
 								function draw(){
 									console.log("circle_____________");
-								ctx.clearRect(0,0,WIDTH,HEIGHT);
-								ctx.fillStyle = "transparent";
-								ctx.strokeStyle = "black";
-								rect(0,0,WIDTH,HEIGHT);
-								ctx.fillStyle = "purple";
-								circle(x,y,10);
+									ctx.clearRect(0,0,WIDTH,HEIGHT);
+									ctx.fillStyle = "transparent";
+									ctx.strokeStyle = "black";
+									rect(0,0,WIDTH,HEIGHT);
+									ctx.fillStyle = "purple";
+									circle(x,y,r);
 								function hotspot(url,locateX,locateY){
 									x = locateX; y = locateY;
 									ctx.clearRect(0,0,WIDTH,HEIGHT);
@@ -87,7 +76,7 @@ function streetMap(){// google street map api
 									clearInterval(drawt);
 
 									$("#videoContainer").css("display","block");
-									$("#video0").css("display","block");
+									$("#video2").css("display","block");
 									$("#map").css("display","none");
 									$("#canvasBall").css("display","none");
 
@@ -96,8 +85,21 @@ function streetMap(){// google street map api
 									video.load();
 									video.play();
 									console.log("hotspot______________");
-									$("#video0").on("ended",function(){
-										$("#stationcontent").css("background-image","none");
+
+										var skipVideo = document.createElement("button");
+										skipVideo.id = "skipbutton";
+										skipVideo.innerHTML = "跳过视频";
+										stationContainer.insertBefore(skipVideo,canvasCt);
+										function clickvideo(){
+											$("#skipbutton").remove();
+											video = document.getElementsByTagName("video")[0];
+											video.currentTime += 1000;
+											}//clickvideo
+										document.getElementById("skipbutton").addEventListener("click",clickvideo,false);
+										
+									$("#video2").on("ended",function(){
+										$("#skipbutton").remove();
+										$("#stationcontent").css("background","none");
 										$("#map").css("display","block");
 										$("#canvasBall").css("display","block");
 										console.log("drawwwwwwwwwwwwwwwwww___________________");
@@ -105,19 +107,19 @@ function streetMap(){// google street map api
 									})
 								}//hotspot
 
-								if(x >= 480 && x <= 570 && y >= 370 && y <= 450){
+								if(x >= 232 && x <= 350 && y >= 291 && y <= 385){
 									leftQP = true;
 									hotspot("img/02.mov",625,645);
 								}
-								if(x >= 830 && x <= 920 && y >= 530 && y <= 640){
+								if(x >= 390 && x <= 454 && y >= 360 && y <= 445){
 									rightQP = true;
 									hotspot("img/04.mov",625,645);
 								}
-								if(x >= 571 && x <= 612 && y >= 410 && y <= 480){
+								if(x >= 531 && x <= 663 && y >= 436 && y <= 549){
 									anjian = true;
 									hotspot("img/05.mov",625,645);	
 								}
-								if(x >= 620 && x <= 685 && y >= 445 && y <= 515){
+								if(x >= 972 && x <= 1123 && y >= 654 && y <= 795){
 									bigClock = true;
 									hotspot("img/06.mov",625,645);
 								}
@@ -166,8 +168,30 @@ function streetMap(){// google street map api
 									}
 									break;
 								}
+							}//keydown
+							var draggable;
+							function mousemove(e){
+								mouseX = e.layerX - c.offsetLeft;
+								mouseY = e.layerY - c.offsetTop;
+								var dx = mouseX - x;
+								var dy = mouseY - y;
+								var dist = Math.sqrt((dx*dx) + (dy*dy));
+								if(draggable && dist < r){         
+									x = mouseX;
+									y = mouseY;
+								}
+								}//mousemove
+							function mousedown(){
+								draggable = true;
 							}
+							function mouseup(){
+								draggable = false;
+							}
+
 							window.addEventListener('keydown',keyDown,true);
+							c.addEventListener("mousemove",mousemove);
+							c.addEventListener("mousedown",mousedown);
+							c.addEventListener("mouseup",mouseup);
 						}//ballRoll
 						ballRoll(); 
 						
@@ -228,29 +252,42 @@ function subtitle(id,subStr,time,p){//打字机函数
 $(document).ready(function(){
     $('#video0').on('ended',function(){
     	$("#video0").css("display","none");
-    	$("#stationcontent").css("background-image","url('img/01.jpg')");
-        $("#introduction").css("display","block");
+    	$("#video0").attr("id","video1");
+    	$("#stationcontent").css("background","#000000");
+    	var imgBG = document.createElement("img");
+    	imgBG.src = "img/start.png";
+    	imgBG.id = "imgstart";
+    	stationContainer.appendChild(imgBG);
+    	imgBG.onclick = function(){
+    		$("#stationcontent").css("background-image","url('img/01.jpg')");
+    		$("#imgstart").remove();
+    		$("#introduction").css("display","block");
+    	}
+        
     });
 
-subtitle("caption","<h1 style='margin-left:5%;width:70%;'>广州火车站是很多人认识广州的第一站，自1974年投运以来，经历了42年风雨的广州火车站即将被改造为高铁站，老广的记忆也即将改头换面。值此大变之际，我们想走近一点，带您重新体验在广州火车站发生的故事。<br/>小组成员：何青秋 吴洁慧 莫博宇 张茜      </h1>",100,1);
+subtitle("caption","<h1 style='margin-left:5%;width:70%;'>广州火车站是很多人认识广州的第一站，自1974年投运以来，经历了42年风雨的广州火车站即将被改造为高铁站，老广的记忆也即将改头换面。值此大变之际，我们想走近一点，带您重新体验在广州火车站发生的故事。<br/>小组成员：何青秋 吴洁慧 莫博宇 张茜      </h1>",90,1);
 
 function buttonClick(){// 点击开始游戏
-	stationContainer.setAttribute("style","");
-	$("#video0").css("display","block");
+	$("#stationcontent").css("background","none");
 	$("#introduction").css("display","none");
+	$("#video1").css("display","block");
 	document.getElementsByTagName("source")[0].setAttribute("src","img/03.mov");
-	video = document.getElementsByTagName("video")[0];
+	video = document.getElementById("video1");
 	video.load();
 	video.play();
-	$('#video0').on("ended",function(){
+	$('#video1').on("ended",function(){
+		$("#imgstart").remove();
+		$("#video1").attr("id","video2");
 		$("#stationcontent").css("background-image","url('img/02.jpeg')");
+		$("#introduction").css("display","block");
 	})
-	subtitle("caption","<h1 style='margin-left:5%;width:70%;'>广州火车站就在眼前了，但是人好多，看起来走过去还要一段时间。。。</h1>",200,1);
-	gameIntro.innerHTML = "<h1>请问您需要在火车站现场购票吗？</h1><button id='button1'>不用，已经打电话／在网上买好了</button><button id='button2'>需要去火车站现场买</button>";
+	subtitle("caption","<h1 style='margin-left:5%;width:70%;'>广州火车站就在眼前了，但是人好多，看起来走过去还要一段时间。。。</h1>",100,1);
+	gameIntro.innerHTML = "<h1>请问您需要在火车站现场购票吗？</h1><button id='button1' class = 'introbt'>不用，已经打电话／在网上买好了</button><button id='button2' class = 'introbt'>需要去火车站现场买</button>";
 	//如果不需要买票
 	function button1Click(){
 
-		gameIntro.innerHTML = "<h1>请问您需要在火车站现场取票吗？</h1><button id='button3'>不用，已经在取票点取好了</button><button id='button4'>需要去火车站现场取票</button>";
+		gameIntro.innerHTML = "<h1>请问您需要在火车站现场取票吗？</h1><button id='button3' class = 'introbt'>不用，已经在取票点取好了</button><button id='button4' class = 'introbt'>需要去火车站现场取票</button>";
 		//如果不需要取票
 		function button3Click(){
 			gameIntro.innerHTML = "<h1 style = 'float:right;width:50%;'>请问您乘坐的列车几点发车？</h1><div id = 'timepicker'></div>";

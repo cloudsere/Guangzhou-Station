@@ -21,16 +21,56 @@ input{
     font-size: 15px;
 }
 button{
-	background:#ffffff;
 	display:block;
-	height: 3em;
-    border-radius: 0.5em;
-    font-size: 1em;
-    margin:0 auto;
+    padding: 10px 15px;
+    font-size: 15px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: #ffffff;
+    background-color: #ea0000;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #999;
+}
+button:hover {background-color: #be1370}
+button:active {
+  background-color: #ff0000;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
 }
 #skipbutton{
 	position:fixed;top:85%;left:85%;
 }
+.introbt0{
+	margin-left:40%;
+}
+.mapbutton{
+	margin-left:43%;
+}
+.introbt{
+	font-size:20px;
+	margin-left:25%;
+	margin-top:20px;
+}
+img{
+	width:100%;
+}
+#imgstart{
+    -webkit-animation: mymove 5s infinite; /* Safari 4.0 - 8.0 */
+    -webkit-animation-timing-function: ease; /* Safari 4.0 - 8.0 */
+    animation: mymove 5s;
+    animation-timing-function: linear;
+}
+@-webkit-keyframes mymove {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes mymove {
+    from {opacity: 0;}
+    to {opacity: 1;}
+} 
 #map{
 	position:absolute;
 	top:0%;
@@ -85,12 +125,13 @@ video.fillWidth{
 	position:absolute;
 	width:100%;
 }
-img{
-	width:100%;
-}
+
 
 /*arrow bounce*/
 #arrow {
+  text-align:center;
+  color:#ffffff;
+  font-size:15px;
   z-index:2;
   position: fixed;
   bottom: 0;
